@@ -1,2 +1,3 @@
 # lokalise
-A flutter lokalise helper
+
+Download and upload arb files to Lokalise
