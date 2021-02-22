@@ -64,9 +64,12 @@ void main(List<String> arguments) async {
         final filename = file.name.split("/")[1].split(".")[0] + ".arb";
         if (file.isFile) {
           final data = file.content as List<int>;
-          File(arguments[3] + Platform.pathSeparator + filename)
+          File outputFile = File(arguments[3] + Platform.pathSeparator + filename)
             ..createSync(recursive: true)
             ..writeAsBytesSync(data);
+          String outputContents = outputFile.readAsStringSync();
+          outputContents = outputContents.replaceAll("\\\\n", "\\n").replaceAll("\\\\r", "\\r");
+          outputFile.writeAsStringSync(outputContents);
         }
       }
       return;
