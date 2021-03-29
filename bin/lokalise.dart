@@ -1,3 +1,4 @@
+import 'dart:collection';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -64,12 +65,48 @@ void main(List<String> arguments) async {
         final filename = file.name.split("/")[1].split(".")[0] + ".arb";
         if (file.isFile) {
           final data = file.content as List<int>;
-          File outputFile = File(arguments[3] + Platform.pathSeparator + filename)
-            ..createSync(recursive: true)
-            ..writeAsBytesSync(data);
-          String outputContents = outputFile.readAsStringSync();
+          File languageFile = File(arguments[3] + Platform.pathSeparator + filename);
+          // check existing content
+          Map<String, dynamic> existingContents;
+          if (languageFile.existsSync()) {
+            try {
+              existingContents = jsonDecode(languageFile.readAsStringSync());
+            } catch (e) {
+              //
+            }
+          }
+          // output downloaded content
+          languageFile.createSync(recursive: true);
+          languageFile.writeAsBytesSync(data);
+
+          // file sanitation
+          String outputContents = languageFile.readAsStringSync();
           outputContents = outputContents.replaceAll("\\\\n", "\\n").replaceAll("\\\\r", "\\r");
-          outputFile.writeAsStringSync(outputContents);
+          languageFile.writeAsStringSync(outputContents);
+
+          // check new content and merge
+          if (existingContents != null) {
+            Map<String, dynamic> newContents = jsonDecode(languageFile.readAsStringSync());
+
+            for (String existingKey in existingContents.keys) {
+              newContents.putIfAbsent(existingKey, () => existingContents[existingKey]);
+            }
+
+            newContents = new SplayTreeMap<String, dynamic>.from(newContents, (a, b) => a.compareTo(b));
+
+            print(" ");
+            print("EXISTING: ${existingContents.entries.length}");
+            print(existingContents.entries);
+
+            print(" ");
+            print("New: ${newContents.entries.length}");
+            print(newContents.entries.last);
+            languageFile.writeAsStringSync(jsonEncode(newContents)
+                .replaceAll("\":\"", "\": \"")
+                .replaceAll("\",", "\",\r\n  ")
+                .replaceAll("{\"", "{\r\n  \"")
+                .replaceAll("\"}", "\"\r\n}"));
+          }
         }
       }
       return;
