@@ -11,8 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  http: ^0.12.2
-  args: ">=1.5.0 <2.0.0"
+  http: ^0.13.3
+  args: ^1.6.0
   archive: ^2.0.13
 
 dev_dependencies:
