@@ -25,8 +25,10 @@ void main(List<String> arguments) async {
 
       http.Client client = http.Client();
 
-      http.Response response = await client.post("https://api.lokalise.com/api2/projects/${arguments[1]}/files/upload",
-          headers: headers, body: jsonEncode(body));
+      http.Response response = await client.post(
+          Uri.parse("https://api.lokalise.com/api2/projects/${arguments[1]}/files/upload"),
+          headers: headers,
+          body: jsonEncode(body));
 
       print(response.statusCode);
       print(response.body);
@@ -43,7 +45,7 @@ void main(List<String> arguments) async {
       http.Client client = http.Client();
 
       http.Response lokaliseResponse = await client.post(
-          "https://api.lokalise.com/api2/projects/${arguments[1]}/files/download",
+          Uri.parse("https://api.lokalise.com/api2/projects/${arguments[1]}/files/download"),
           headers: headers,
           body: jsonEncode(body));
 
