@@ -61,7 +61,7 @@ void main(List<String> arguments) async {
 
       Map<String, dynamic> lokliseResponseBody = jsonDecode(lokaliseResponse.body);
 
-      http.Response response = await client.get(lokliseResponseBody["bundle_url"]);
+      http.Response response = await client.get(Uri.parse(lokliseResponseBody["bundle_url"]));
       final archive = ZipDecoder().decodeBytes(response.bodyBytes);
       for (final file in archive) {
         final filename = file.name.split("/")[1].split(".")[0] + ".arb";
